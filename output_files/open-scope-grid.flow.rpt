@@ -1,0 +1,137 @@
+Flow report for open-scope-grid
+Sat Dec 28 23:58:22 2024
+Quartus II 64-Bit Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Web Edition
+
+
+---------------------
+; Table of Contents ;
+---------------------
+  1. Legal Notice
+  2. Flow Summary
+  3. Flow Settings
+  4. Flow Non-Default Global Settings
+  5. Flow Elapsed Time
+  6. Flow OS Summary
+  7. Flow Log
+  8. Flow Messages
+  9. Flow Suppressed Messages
+
+
+
+----------------
+; Legal Notice ;
+----------------
+Copyright (C) 1991-2013 Altera Corporation
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, Altera MegaCore Function License 
+Agreement, or other applicable license agreement, including, 
+without limitation, that your use is for the sole purpose of 
+programming logic devices manufactured by Altera and sold by 
+Altera or its authorized distributors.  Please refer to the 
+applicable agreement for further details.
+
+
+
++--------------------------------------------------------------------------------------+
+; Flow Summary                                                                         ;
++------------------------------------+-------------------------------------------------+
+; Flow Status                        ; Successful - Sat Dec 28 23:58:22 2024           ;
+; Quartus II 64-Bit Version          ; 13.0.1 Build 232 06/12/2013 SP 1 SJ Web Edition ;
+; Revision Name                      ; open-scope-grid                                 ;
+; Top-level Entity Name              ; TOP                                             ;
+; Family                             ; Cyclone III                                     ;
+; Device                             ; EP3C5E144C8                                     ;
+; Timing Models                      ; Final                                           ;
+; Total logic elements               ; 954 / 5,136 ( 19 % )                            ;
+;     Total combinational functions  ; 944 / 5,136 ( 18 % )                            ;
+;     Dedicated logic registers      ; 191 / 5,136 ( 4 % )                             ;
+; Total registers                    ; 191                                             ;
+; Total pins                         ; 85 / 95 ( 89 % )                                ;
+; Total virtual pins                 ; 0                                               ;
+; Total memory bits                  ; 12,000 / 423,936 ( 3 % )                        ;
+; Embedded Multiplier 9-bit elements ; 0 / 46 ( 0 % )                                  ;
+; Total PLLs                         ; 0 / 2 ( 0 % )                                   ;
++------------------------------------+-------------------------------------------------+
+
+
++-----------------------------------------+
+; Flow Settings                           ;
++-------------------+---------------------+
+; Option            ; Setting             ;
++-------------------+---------------------+
+; Start date & time ; 12/28/2024 23:57:54 ;
+; Main task         ; Compilation         ;
+; Revision Name     ; open-scope-grid     ;
++-------------------+---------------------+
+
+
++---------------------------------------------------------------------------------------------------------------------+
+; Flow Non-Default Global Settings                                                                                    ;
++-------------------------------------+------------------------------+-----------------+-------------+----------------+
+; Assignment Name                     ; Value                        ; Default Value   ; Entity Name ; Section Id     ;
++-------------------------------------+------------------------------+-----------------+-------------+----------------+
+; COMPILER_SIGNATURE_ID               ; 929353434761.173542667415964 ; --              ; --          ; --             ;
+; EDA_OUTPUT_DATA_FORMAT              ; Vhdl                         ; --              ; --          ; eda_simulation ;
+; EDA_SIMULATION_TOOL                 ; ModelSim (VHDL)              ; <None>          ; --          ; --             ;
+; EDA_TIME_SCALE                      ; 1 ps                         ; --              ; --          ; eda_simulation ;
+; MAX_CORE_JUNCTION_TEMP              ; 85                           ; --              ; --          ; --             ;
+; MIN_CORE_JUNCTION_TEMP              ; 0                            ; --              ; --          ; --             ;
+; OUTPUT_IO_TIMING_FAR_END_VMEAS      ; Half Signal Swing            ; --              ; --          ; --             ;
+; OUTPUT_IO_TIMING_FAR_END_VMEAS      ; Half Signal Swing            ; --              ; --          ; --             ;
+; OUTPUT_IO_TIMING_NEAR_END_VMEAS     ; Half Vccio                   ; --              ; --          ; --             ;
+; OUTPUT_IO_TIMING_NEAR_END_VMEAS     ; Half Vccio                   ; --              ; --          ; --             ;
+; PARTITION_COLOR                     ; 16764057                     ; --              ; top         ; Top            ;
+; PARTITION_FITTER_PRESERVATION_LEVEL ; PLACEMENT_AND_ROUTING        ; --              ; top         ; Top            ;
+; PARTITION_NETLIST_TYPE              ; SOURCE                       ; --              ; top         ; Top            ;
+; POWER_BOARD_THERMAL_MODEL           ; None (CONSERVATIVE)          ; --              ; --          ; --             ;
+; POWER_PRESET_COOLING_SOLUTION       ; No Heat Sink With Still Air  ; --              ; --          ; --             ;
+; PROJECT_OUTPUT_DIRECTORY            ; output_files                 ; --              ; --          ; --             ;
+; TOP_LEVEL_ENTITY                    ; top                          ; open-scope-grid ; --          ; --             ;
+; VHDL_INPUT_VERSION                  ; VHDL_2008                    ; VHDL_1993       ; --          ; --             ;
+; VHDL_SHOW_LMF_MAPPING_MESSAGES      ; Off                          ; --              ; --          ; --             ;
++-------------------------------------+------------------------------+-----------------+-------------+----------------+
+
+
++-------------------------------------------------------------------------------------------------------------------------------+
+; Flow Elapsed Time                                                                                                             ;
++---------------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Module Name               ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
++---------------------------+--------------+-------------------------+---------------------+------------------------------------+
+; Analysis & Synthesis      ; 00:00:04     ; 1.0                     ; 4662 MB             ; 00:00:04                           ;
+; Fitter                    ; 00:00:08     ; 1.0                     ; 4823 MB             ; 00:00:08                           ;
+; Assembler                 ; 00:00:01     ; 1.0                     ; 4542 MB             ; 00:00:01                           ;
+; TimeQuest Timing Analyzer ; 00:00:09     ; 1.0                     ; 4613 MB             ; 00:00:09                           ;
+; EDA Netlist Writer        ; 00:00:02     ; 1.0                     ; 4525 MB             ; 00:00:01                           ;
+; Total                     ; 00:00:24     ; --                      ; --                  ; 00:00:23                           ;
++---------------------------+--------------+-------------------------+---------------------+------------------------------------+
+
+
++----------------------------------------------------------------------------------------+
+; Flow OS Summary                                                                        ;
++---------------------------+------------------+-----------+------------+----------------+
+; Module Name               ; Machine Hostname ; OS Name   ; OS Version ; Processor type ;
++---------------------------+------------------+-----------+------------+----------------+
+; Analysis & Synthesis      ; Maister2400      ; Windows 7 ; 6.2        ; x86_64         ;
+; Fitter                    ; Maister2400      ; Windows 7 ; 6.2        ; x86_64         ;
+; Assembler                 ; Maister2400      ; Windows 7 ; 6.2        ; x86_64         ;
+; TimeQuest Timing Analyzer ; Maister2400      ; Windows 7 ; 6.2        ; x86_64         ;
+; EDA Netlist Writer        ; Maister2400      ; Windows 7 ; 6.2        ; x86_64         ;
++---------------------------+------------------+-----------+------------+----------------+
+
+
+------------
+; Flow Log ;
+------------
+quartus_map --read_settings_files=on --write_settings_files=off open-scope -c open-scope-grid
+quartus_fit --read_settings_files=off --write_settings_files=off open-scope -c open-scope-grid
+quartus_asm --read_settings_files=off --write_settings_files=off open-scope -c open-scope-grid
+quartus_sta open-scope -c open-scope-grid
+quartus_eda --read_settings_files=off --write_settings_files=off open-scope -c open-scope-grid
+
+
+

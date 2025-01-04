@@ -1,0 +1,227 @@
+-- TOP
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use work.all;
+use work.common.all;
+
+
+entity TOP is
+	port (
+			-- DRAM port
+			RAM_DQ		: inout std_logic_vector(7 downto 0);
+			RAM_nWE		: out std_logic;
+			RAM_nCAS		: out std_logic;
+			RAM_nRAS		: out std_logic;
+			RAM_nCS		: out std_logic;
+			RAM_BA0		: out std_logic;
+			RAM_BA1		: out std_logic;
+			RAM_DQM		: out std_logic;
+			RAM_CKE		: out std_logic;
+			RAM_CLK		: out std_logic;
+			RAM_A			: out std_logic_vector(12 downto 0);
+			
+			--Clocks
+			CLK_25		: in std_logic;
+			CLK_32		: in std_logic;
+			
+			
+			--AD9226: 12 bit 65 MSps ADC port
+			AD_CLK		: out std_logic;
+			AD_data		: in	std_logic_vector(11 downto 0);
+			
+			--ADV7513: HDMI Tx
+			ADV_D			: out std_logic_vector(23 downto 0);
+			ADV_HSYNC	: out std_logic;
+			ADV_CLK		: out std_logic;
+			ADV_VSYNC	: out std_logic;
+			ADV_I2SD		: out std_logic;
+			ADV_SCLK		: out std_logic;
+			ADV_LRCLK	: out std_logic;
+			ADV_DE		: out std_logic;
+			
+			--I2C
+			SCL			: out std_logic;
+			SDA			: inout std_logic;
+			
+			--User I/O
+			SW				: in	std_logic;
+			KEY			: in	std_logic_vector(1 downto 0);
+			LED			: out	std_logic_vector(3 downto 0)
+			
+		);
+end TOP;
+
+architecture mixed of TOP is
+
+---- state Machine signals
+type t_state is (start, writeSamples, readSamples);
+signal s_mainFSM_state : t_state := start;
+
+--counter values
+signal count25			: integer range 0 to 15;
+signal count32			: integer range 0 to 15;
+
+--video signals
+signal videoEN		: std_logic;
+signal red, green	: std_logic_vector(7 downto 0);
+signal blue			: std_logic_vector(7 downto 0);
+signal hc, vc		: std_logic_vector(9 downto 0);
+
+--i2c signals
+signal go			: std_logic;
+
+--ram signals
+signal s_ram_data_out		: std_logic_vector(11 downto 0);
+signal s_adc_sample			: std_logic_vector(11 downto 0);
+signal s_ram_write_en		: std_logic;
+signal addr_read				: natural range 0 to (640 - 1) := 1;
+signal addr_write				: natural range 0 to (640 - 1) := 1;
+signal s_readAllowed_32		: std_logic;
+signal r_readAllowed_25		: std_logic;
+
+--trigger_system signals
+signal s_triggered		: std_logic;
+
+begin
+
+	U1 : vga_640x480
+		port map (clk => CLK_25, clr => '1', hsync => ADV_HSYNC,
+						vsync => ADV_VSYNC, hc => hc, vc => vc, visible_img => videoEN);
+		
+--	U2 : colorgen
+--		port map (CLK_25, videoEN, hc, red, green, blue);
+		
+	U3 : i2c_Master
+		port map (CLK_25, SCL, SDA, go, X"72", X"10", X"41", 3);
+		
+	U4 : edgedetect
+		port map (CLK_25, SW, go, pos_edge);
+		
+	U5 : sample_RAM
+		port map (clk_a => CLK_25, clk_b => CLK_32, addr_a => addr_read, addr_b => addr_write,
+					data_a => (others => '0'), data_b => s_adc_sample, we_a => '0', we_b => s_ram_write_en,
+					q_a => s_ram_data_out,
+					q_b => open);
+					
+	U6 : trigger_system
+		port map (	i_triggervalue => 240,
+						i_adc_sample => s_adc_sample,
+						i_clock => CLK_32,
+						o_triggered => s_triggered);
+
+-- sequential logic
+mainFSM : process(CLK_32)
+begin
+	if (rising_edge(CLK_32)) then
+		case s_mainFSM_state is
+			when start =>
+				addr_write <= 0;
+				if(s_triggered = '1' OR go = '1') then
+					s_mainFSM_state <= writeSamples;
+					s_ram_write_en <= '1';
+					s_readAllowed_32 <= '0';
+				end if;
+			when writeSamples =>
+				if (addr_write = 639) then
+					addr_write <= 0;
+					s_ram_write_en <= '0';
+					s_readAllowed_32 <= '1';
+					s_mainFSM_state <= readSamples;
+				else
+					addr_write <= addr_write + 1;
+					s_mainFSM_state <= writeSamples;
+				end if;
+			when readSamples =>
+				s_mainFSM_state <= start;
+		end case;
+	end if;
+end process mainFSM;
+
+counter32 : process (CLK_32)
+variable prescaler	: integer range 0 to 15999999;
+begin
+	if(rising_edge(CLK_32)) then
+		
+		
+		if (prescaler = 15999999) then
+			prescaler := 0;
+			count32 <= count32 + 1;
+		else
+		prescaler := prescaler + 1;
+		end if;
+	end if;
+end process;
+
+counter25 : process (CLK_25)
+variable prescaler	: integer range 0 to 24999999;
+begin
+	if(rising_edge(CLK_25)) then
+		
+		if (prescaler = 24999999) then
+			prescaler := 0;
+			count25 <= count25 + 1;
+		else
+		prescaler := prescaler + 1;
+		end if;
+	end if;
+end process;
+
+--ram_read_addr_inc : process (hc)
+--begin
+--	for i in 0 to 45 loop
+--		if (unsigned(hc) - 144 = i*14 + 1) then
+--			addr_read <= i + 144;
+--		else
+--			addr_read <= 500;
+--		end if;
+--	end loop;
+--end process ram_read_addr_inc;
+
+ramreader : process (CLK_25)
+begin
+	if(rising_edge(CLK_25)) then
+		if (videoEN = '1') then
+			if(true) then
+				if (unsigned(vc) - 31 = unsigned(s_ram_data_out)) then
+					red	<= "11101010";
+					green	<= "11101010";		-- scope yellow
+					blue	<= "00000000";
+				else
+					red	<= X"46";
+					green	<= X"06";		-- dark red bg
+					blue	<= X"18";
+				end if;
+			else
+				red	<= X"46";
+				green	<= X"06";
+				blue	<= X"18";
+			end if;
+		else
+			red	<= (others => '0');
+			green	<= (others => '0');	-- all black at blanking
+			blue	<= (others => '0');
+		end if;
+	end if;
+end process ramreader;
+
+-- comb logic
+--gen : for i in 0 to 3 generate
+--	LED(i) <= std_logic_vector(to_unsigned(count25,4))(3-i) when SW = '1' 
+--			else std_logic_vector(to_unsigned(count32,4))(3-i);
+--end generate;
+
+LED						<= AD_data(11 downto 8);
+
+ADV_CLK					<= CLK_25;
+ADV_D(23 downto 16)	<= red;
+ADV_D(15 downto 8)	<= green;
+ADV_D(7 downto 0)		<= blue;
+ADV_DE					<= videoEN;
+
+s_adc_sample	<= AD_data(10 downto 0) & "0";
+AD_CLK 			<= CLK_32;
+
+addr_read <= to_integer(unsigned(hc) - 144) when videoEN = '1' else 0;
+
+end mixed;
