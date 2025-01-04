@@ -44,14 +44,18 @@
 !*.qpf
 !*.qsf
 !*.qws
+!*.qsys
 !*.bdf
 !*.vhd
 !*.v
 !*.ptf
+!*.pof
 !*.bsf
 !**/class.ptf
 !*.tbd
+!*.sdc
 !*.sof
+!*.sopcinfo
 ## tbd
 
 !*.tcl
