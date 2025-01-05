@@ -40,10 +40,12 @@
 
 /*
 !/*.gitignore
-!**/*.cdf
-!**/*.sof
-!**/*.pof
-!**/*.summary
+!/output_files
+/output_files/*
+!/output_files/*.cdf
+!/output_files/*.sof
+!/output_files/*.pof
+!/output_files/*.summary
 ##
 !*.qpf
 !*.qsf
