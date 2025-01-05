@@ -1,4 +1,4 @@
--- TOP - open-scope - running on Cyclone III dev board from Digital Design Den
+-- TOP - open-scope - running on Cyclone III dev board from Digital Design Den.
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
