@@ -40,6 +40,10 @@
 
 /*
 !/*.gitignore
+!/*.cdf
+!/*.sof
+!/*.pof
+!*.summary
 ##
 !*.qpf
 !*.qsf
