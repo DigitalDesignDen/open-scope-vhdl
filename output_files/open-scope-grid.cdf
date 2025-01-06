@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(EP3C5E144) Path("G:/FPGA_Cyclone_iii/open-scope/output_files/") File("open-scope-grid.sof") MfrSpec(OpMask(1));
+		Device PartName(EP3C5E144) Path("G:/FPGA_Cyclone_iii/open-scope-vhdl/output_files/") File("open-scope-grid.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 

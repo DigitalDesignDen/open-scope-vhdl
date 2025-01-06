@@ -61,7 +61,7 @@ set_global_assignment -name VHDL_FILE sample_RAM.vhd
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "2.5 V"
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
 set_location_assignment PIN_69 -to RAM_A[10]
 set_location_assignment PIN_50 -to RAM_A[11]
 set_location_assignment PIN_59 -to RAM_nWE
@@ -160,5 +160,10 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_global_assignment -name VHDL_FILE gridGen.vhd
 set_global_assignment -name VHDL_FILE clkdiv.vhd
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
 set_global_assignment -name CDF_FILE "output_files/open-scope-grid-AS.cdf"
+set_global_assignment -name VHDL_FILE fir_filter.vhd
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 4.0
+set_global_assignment -name ROUTER_EFFORT_MULTIPLIER 4.0
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

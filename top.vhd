@@ -83,6 +83,8 @@ signal go			: std_logic;
 -- ram signals
 signal s_ram_data_out		: std_logic_vector(11 downto 0);
 signal s_adc_sample			: std_logic_vector(11 downto 0);
+signal s_adc_sample_toRAM	: std_logic_vector(11 downto 0);
+signal s_adc_sample_fir		: std_logic_vector(11 downto 0);
 signal s_ram_write_en		: std_logic;
 signal addr_read				: natural range 0 to (BUFFER_SIZE - 1) := 1;
 signal addr_write				: natural range 0 to (BUFFER_SIZE - 1) := 1;
@@ -127,7 +129,7 @@ begin
 	U4 : sample_RAM
 		generic map (DATA_WIDTH => 12, ADDR_SIZE => BUFFER_SIZE)
 		port map (clk_a => CLK_25, clk_b => CLK_sample, addr_a => addr_read, addr_b => addr_write,
-					data_a => (others => '0'), data_b => s_adc_sample, we_a => '0', we_b => s_ram_write_en,
+					data_a => (others => '0'), data_b => s_adc_sample_toRAM, we_a => '0', we_b => s_ram_write_en,
 					q_a => s_ram_data_out,
 					q_b => open);
 					
@@ -142,6 +144,9 @@ begin
 		
 	U7 : clkdiv
 		port map(CLK_32, '1', CLK_16);
+		
+	U8 : fir_filter
+		port map(CLK_sample, '0', s_adc_sample, s_adc_sample_fir);
 
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------
@@ -315,7 +320,12 @@ gen : for i in 0 to 3 generate
 	LED(i) <= std_logic_vector(to_unsigned(count25,4))(3-i) when SW = '1' 
 			else std_logic_vector(to_unsigned(count32,4))(3-i);
 end generate;
+--------------------------------------------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------------------------------------------
+-- switch samples between raw and filtered
+s_adc_sample_toRAM <= s_adc_sample_fir when SW = '0' else s_adc_sample;
+--------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------
@@ -338,23 +348,23 @@ AD_CLK 			<= CLK_sample;
 --Mapping the horizontal counter values to the address in sample memory.
 
 --direct mapping:
---addr_read	<= to_integer(unsigned(hc) - 144) when videoEN = '1' else 0;
+addr_read	<= to_integer(unsigned(hc) - 144) when videoEN = '1' else 0;
 
 --switch for sample skipping:
-ram_read_addr_inc : process (hc, videoEN, SW)
-begin
-	if (videoEN = '1' AND SW = '0') then
-		addr_read	<= to_integer(unsigned(hc) - 144);
-	elsif (videoEN = '1' AND SW = '1') then
-		if to_integer(unsigned(hc) - 144) * 4 < BUFFER_SIZE then
-			addr_read	<= to_integer(unsigned(hc) - 144) * 4 mod BUFFER_SIZE;
-		else
-			addr_read	<= BUFFER_SIZE - 1;
-		end if;
-	else
-		addr_read <= 0;
-	end if;
-end process ram_read_addr_inc;
+--ram_read_addr_inc : process (hc, videoEN, SW)
+--begin
+--	if (videoEN = '1' AND SW = '0') then
+--		addr_read	<= to_integer(unsigned(hc) - 144);
+--	elsif (videoEN = '1' AND SW = '1') then
+--		if to_integer(unsigned(hc) - 144) * 4 < BUFFER_SIZE then
+--			addr_read	<= to_integer(unsigned(hc) - 144) * 4 mod BUFFER_SIZE;
+--		else
+--			addr_read	<= BUFFER_SIZE - 1;
+--		end if;
+--	else
+--		addr_read <= 0;
+--	end if;
+--end process ram_read_addr_inc;
 
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------
