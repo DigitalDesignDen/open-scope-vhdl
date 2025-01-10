@@ -32,7 +32,7 @@ entity FIRcompiled_ast is
   PHYSCHANOUT         : integer := 1;
   CHANSPERPHYIN       : natural := 1;
   CHANSPERPHYOUT      : natural := 1;
-  OUTPUTFIFODEPTH     : integer := 16;
+  OUTPUTFIFODEPTH     : integer := 8;
   USE_PACKETS         : integer := 0;
   ENABLE_BACKPRESSURE : boolean := false;
   LOG2_CHANSPERPHYOUT : natural := log2_ceil_one(1);
