@@ -41,6 +41,7 @@
 /*
 !/*.gitignore
 !/output_files
+!/FIRcompiled_sim/
 /output_files/*
 !/output_files/*.cdf
 !/output_files/*.sof
