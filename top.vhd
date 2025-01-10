@@ -85,6 +85,8 @@ signal s_ram_data_out		: std_logic_vector(11 downto 0);
 signal s_adc_sample			: std_logic_vector(11 downto 0);
 signal s_adc_sample_toRAM	: std_logic_vector(11 downto 0);
 signal s_adc_sample_fir		: std_logic_vector(11 downto 0);
+signal s_adc_sample_fircom	: std_logic_vector(24 downto 0);
+signal fircom_data_valid	: std_logic;
 signal s_ram_write_en		: std_logic;
 signal addr_read				: natural range 0 to (BUFFER_SIZE - 1) := 1;
 signal addr_write				: natural range 0 to (BUFFER_SIZE - 1) := 1;
@@ -145,8 +147,12 @@ begin
 	U7 : clkdiv
 		port map(CLK_32, '1', CLK_16);
 		
-	U8 : fir_filter
-		port map(CLK_sample, '0', s_adc_sample, s_adc_sample_fir);
+--	U8 : fir_filter
+--		port map(CLK_sample, '0', s_adc_sample, s_adc_sample_fir);
+		
+	U8 : FIRcompiled
+		port map(CLK_sample, '1', std_logic_vector(unsigned(s_adc_sample) - 2048), '1', 
+					"00", s_adc_sample_fircom, fircom_data_valid, open);
 
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------
@@ -324,7 +330,26 @@ end generate;
 
 --------------------------------------------------------------------------------------------------------------------
 -- switch samples between raw and filtered
-s_adc_sample_toRAM <= s_adc_sample_fir when SW = '0' else s_adc_sample;
+-- s_adc_sample_fircom is the output of Intel FIR compiler II output
+-- s_adc_sample_fir is the output of a self-developed FIR Filter
+-- s_adc_sample is the output of the raw samples
+-- s_adc_sample_fircom is 25-bit wide and needs to be scaled to 12-bit by dividing by 1280
+-- dividing by 1280 is the same as *51 srl 16
+--s_adc_sample_toRAM <= std_logic_vector(((signed(s_adc_sample_fircom)*51) srl 16)+2048)(11 downto 0) when SW = '0'
+--							else s_adc_sample;
+--s_adc_sample_toRAM <= s_adc_sample_fir when SW = '0' else s_adc_sample;
+--s_adc_sample_toRAM <= std_logic_vector(((signed(s_adc_sample_fircom)*51) srl 16)+2048)(11 downto 0) when fircom_data_valid = '1'
+--							else (others => '0');
+process (CLK_sample)
+begin
+	if rising_edge(CLK_sample) then
+		if (fircom_data_valid = '0') then
+			s_adc_sample_toRAM <= std_logic_vector(((signed(s_adc_sample_fircom)*51) srl 16)+2048)(11 downto 0);
+		else
+			s_adc_sample_toRAM <= (others => '0');
+		end if;
+	end if;
+end process;
 --------------------------------------------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------------------------------------------

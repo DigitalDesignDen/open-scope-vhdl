@@ -15,14 +15,16 @@ architecture rtl of fir_filter is
 
 	type integer_vector is array(0 to 23) of integer;
     -- Filter coefficients (16-tap example, scaled for fixed-point arithmetic)
-    constant coeffs : integer_vector := ( 82,  125,  226,  405,  666, 1005, 1401, 1823, 2232, 2586, 2847, 2985, 2985, 2847,
+   constant coeffs : integer_vector := ( 82,  125,  226,  405,  666, 1005, 1401, 1823, 2232, 2586, 2847, 2985, 2985, 2847,
  2586, 2232, 1823, 1401, 1005,  666,  405,  226,  125,   82);
 
     -- Internal signals
     signal samples : integer_vector := (others => 0); -- Shift register
-    --signal acc     : integer := 0; -- Accumulator for FIR computation
-    signal result  : integer := 0; -- Signed filter result
-    signal signed_data : integer := 0; -- Converted signed ADC input
+	 signal data_in_reg : std_logic_vector(11 downto 0);
+    --signal acc     : integer := 0; 						-- Accumulator for FIR computation
+    signal result  : integer := 0; 							-- Signed filter result
+    signal signed_data : integer := 0; 					-- Converted signed ADC input
+	 	 
 begin
 
     process(clk, reset)
@@ -33,8 +35,11 @@ begin
             acc := 0;
             result <= 0;
         elsif rising_edge(clk) then
+				-- register input data_in
+				data_in_reg <= data_in;
+				
             -- Convert unsigned ADC input to signed
-            signed_data <= to_integer(unsigned(data_in)) - 2048;
+            signed_data <= to_integer(unsigned(data_in_reg)) - 2048;
 
             -- Shift in the new signed sample
             samples <= samples(1 to 23) & signed_data;

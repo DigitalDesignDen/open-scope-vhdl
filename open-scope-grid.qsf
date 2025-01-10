@@ -166,4 +166,7 @@ set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
 set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
 set_global_assignment -name PLACEMENT_EFFORT_MULTIPLIER 4.0
 set_global_assignment -name ROUTER_EFFORT_MULTIPLIER 4.0
+set_global_assignment -name QIP_FILE FIRcompiled.qip
+set_global_assignment -name SIP_FILE FIRcompiled.sip
+set_global_assignment -name VHDL_FILE FIRcompiled.vhd
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

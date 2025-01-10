@@ -9,10 +9,13 @@ package common is
 end common;
 
 package body common is
+
 	-- subprograms bodies here
 	function map_sampleToScreen(sample : std_logic_vector(11 downto 0)) return integer is
 	variable product	: integer;
 	variable sum		: integer;
+	attribute multstyle : string;
+	attribute multstyle of product : variable is "dsp";
 	begin
 		product	:= to_integer(unsigned(sample)) * (-13);
 		product	:= product / 50;
@@ -20,4 +23,5 @@ package body common is
 	
 		return sum;
 	end function;
+	
 end common;
