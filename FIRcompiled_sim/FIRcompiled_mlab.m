@@ -12,7 +12,7 @@
 %FILTER PARAMETER
 %Input Data Type :	Signed Binary
 %Input Data Width: 12
-%Decimation Factor: 3
+%Decimation Factor: 10
 
 %FIR Width (Full Calculation Width Before Output Width Adjust) :25
 %-----------------------------------------------------------------------------------------------------------
@@ -21,7 +21,7 @@
  function  output = FIRcompiled_mlab(stimulation, output)
  coef_matrix_in= [3,5,9,17,28,42,59,77,94,110,121,127,127,121,110,94,77,59,42,28,17,9,5,3];
  INTER_FACTOR  = 1;
- DECI_FACTOR  =  3;
+ DECI_FACTOR  =  10;
  MSB_RM  = 0;
  MSB_TYPE  = 0;
  LSB_RM  = 0;

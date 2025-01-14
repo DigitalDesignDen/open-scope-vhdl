@@ -13,6 +13,6 @@ nTaps : 24
 clockRate : 32 
 inRate : 32 
 interpN : 1 
-decimN : 3 
+decimN : 10 
 busDataWidth : 16 
 bankInWidth : 0 

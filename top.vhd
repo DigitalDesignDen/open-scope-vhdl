@@ -88,6 +88,7 @@ signal s_adc_sample_fir		: std_logic_vector(11 downto 0);
 signal s_adc_sample_fircom	: std_logic_vector(24 downto 0);
 signal r_adc_sample_fircom	: std_logic_vector(24 downto 0);
 signal fircom_data_valid	: std_logic;
+signal r_fircom_data_valid_old	: std_logic_vector(9 downto 0);
 signal s_ram_write_en		: std_logic;
 signal addr_read				: natural range 0 to (BUFFER_SIZE - 1) := 1;
 signal addr_write				: natural range 0 to (BUFFER_SIZE - 1) := 1;
@@ -336,15 +337,19 @@ end generate;
 -- s_adc_sample is the output of the raw samples
 -- s_adc_sample_fircom is 25-bit wide and needs to be scaled to 12-bit by dividing by 1280
 -- dividing by 1280 is the same as *51 srl 16
---s_adc_sample_toRAM <= std_logic_vector(((signed(s_adc_sample_fircom)*51) srl 16)+2048)(11 downto 0) when SW = '0'
---							else s_adc_sample;
+s_adc_sample_toRAM <= std_logic_vector(((signed(s_adc_sample_fircom)*51) srl 16)+2048)(11 downto 0) when SW = '0'
+							else s_adc_sample;
 --s_adc_sample_toRAM <= s_adc_sample_fir when SW = '0' else s_adc_sample;
-s_adc_sample_toRAM <= std_logic_vector(((signed(s_adc_sample_fircom)*51) srl 16)+2048)(11 downto 0) when fircom_data_valid = '1'
-							else (others => '0');
+--s_adc_sample_toRAM <= std_logic_vector(((signed(s_adc_sample_fircom)*51) srl 16)+2048)(11 downto 0) when fircom_data_valid = '1'
+--							else (others => '0');
 --process (CLK_32)
 --begin
 --	if rising_edge(CLK_32) then
---		if (fircom_data_valid = '1') then
+--	
+--		r_fircom_data_valid_old(0) <= fircom_data_valid;
+--		r_fircom_data_valid_old(9 downto 1) <= r_fircom_data_valid_old(8 downto 0);
+--	
+--		if (r_fircom_data_valid_old(8) = '1') then
 --			r_adc_sample_fircom <= s_adc_sample_fircom;
 --		else
 --			r_adc_sample_fircom <= (others => '0');
