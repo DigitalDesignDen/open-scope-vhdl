@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 package common is 
 
 -- constants
-	constant BUFFER_SIZE : natural := 1000;
+	constant BUFFER_SIZE : natural := 2240;
 
 -- types
 	type t_edge is (neg_edge, pos_edge);
