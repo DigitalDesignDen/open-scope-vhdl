@@ -69,3 +69,4 @@
 
 # End of https://www.toptal.com/developers/gitignore/api/alteraquartusii
 *.summary
+output_files/open-scope-grid.map.summary
