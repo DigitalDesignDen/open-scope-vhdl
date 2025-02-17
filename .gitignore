@@ -45,7 +45,7 @@
 !/output_files/*.cdf
 !/output_files/*.sof
 !/output_files/*.pof
-!/output_files/*.summary
+#!/output_files/*.summary
 ##
 !*.qpf
 !*.qsf
@@ -62,7 +62,7 @@
 !*.sdc
 !*.sof
 !*.sopcinfo
-!*.summary
+##!*.summary
 !*.cdf
 ## tbd
 
