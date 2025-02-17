@@ -54,10 +54,6 @@ end TOP;
 
 architecture mixed of TOP is
 
--- constants
-constant BUFFER_SIZE : natural := 1000;
-
-
 ---- state Machine signals
 type t_state is (start, writeSamples, readSamples);
 signal s_mainFSM_state : t_state := start;
@@ -142,6 +138,9 @@ begin
 		
 	U7 : clkdiv
 		port map(CLK_32, '1', CLK_16);
+		
+	U8 : horizontal_control
+		port map(CLK_25, KEY(1), KEY(0), hc, videoEN, addr_read);
 
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------
@@ -310,7 +309,7 @@ end process pixelColorizer;
 -- combinational logic starting here
 
 --------------------------------------------------------------------------------------------------------------------
---Map both crystal clock coutners to LEDs to confirm that clocks are running (for debug purposees only)
+--Map eigther crystal clock coutners to LEDs to confirm that clocks are running (for debug purposees only)
 gen : for i in 0 to 3 generate
 	LED(i) <= std_logic_vector(to_unsigned(count25,4))(3-i) when SW = '1' 
 			else std_logic_vector(to_unsigned(count32,4))(3-i);
@@ -341,20 +340,20 @@ AD_CLK 			<= CLK_sample;
 --addr_read	<= to_integer(unsigned(hc) - 144) when videoEN = '1' else 0;
 
 --switch for sample skipping:
-ram_read_addr_inc : process (hc, videoEN, SW)
-begin
-	if (videoEN = '1' AND SW = '0') then
-		addr_read	<= to_integer(unsigned(hc) - 144);
-	elsif (videoEN = '1' AND SW = '1') then
-		if to_integer(unsigned(hc) - 144) * 4 < BUFFER_SIZE then
-			addr_read	<= to_integer(unsigned(hc) - 144) * 4 mod BUFFER_SIZE;
-		else
-			addr_read	<= BUFFER_SIZE - 1;
-		end if;
-	else
-		addr_read <= 0;
-	end if;
-end process ram_read_addr_inc;
+--ram_read_addr_inc : process (hc, videoEN, SW)
+--begin
+--	if (videoEN = '1' AND SW = '0') then
+--		addr_read	<= to_integer(unsigned(hc) - 144);
+--	elsif (videoEN = '1' AND SW = '1') then
+--		if ( to_integer(unsigned(hc) - 144) * 1 )/2 < BUFFER_SIZE then
+--			addr_read	<= ( to_integer(unsigned(hc) - 144) * 1 )/2 mod BUFFER_SIZE;
+--		else
+--			addr_read	<= BUFFER_SIZE - 1;
+--		end if;
+--	else
+--		addr_read <= 0;
+--	end if;
+--end process ram_read_addr_inc;
 
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------

@@ -3,7 +3,13 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 package common is 
 
+-- constants
+	constant BUFFER_SIZE : natural := 2240;
+
+-- types
 	type t_edge is (neg_edge, pos_edge);
+	
+-- functions
 	function map_sampleToScreen (sample : std_logic_vector(11 downto 0)) return integer;
 	
 end common;

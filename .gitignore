@@ -62,7 +62,7 @@
 !*.sdc
 !*.sof
 !*.sopcinfo
-##!*.summary
+#!*.summary
 !*.cdf
 ## tbd
 
