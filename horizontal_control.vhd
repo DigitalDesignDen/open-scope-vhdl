@@ -19,10 +19,13 @@ end horizontal_control;
 
 architecture behavioral of horizontal_control is
 
-signal r_numerator	: natural range 0 to 7 := 0; 
+signal r_numerator	: natural range 0 to 7 := 0;
+signal r_denominator	: positive range 1 to 7 := 2;
 
 signal r_inc_pulse	: std_logic;
 signal r_dec_pulse	: std_logic;
+
+signal denominator_adjustig	: boolean := false;
 
 begin
 
@@ -35,19 +38,47 @@ begin
 numerator_set : process (i_clock)
 begin
 	if (rising_edge(i_clock)) then
-		if r_inc_pulse = '1' AND r_numerator < 7 then
-			r_numerator <= r_numerator + 1;
-		elsif r_dec_pulse = '1' AND r_numerator > 1 then
-			r_numerator <= r_numerator - 1;
+		if NOT denominator_adjustig then
+			if r_inc_pulse = '1' AND r_numerator < 7 then
+				r_numerator <= r_numerator + 1;
+			elsif r_dec_pulse = '1' AND r_numerator > 1 then
+				r_numerator <= r_numerator - 1;
+			elsif r_dec_pulse = '1' AND r_numerator <= 1 then
+				--denominator_adjustig <= true;
+			end if;
 		end if;
 	end if;
 end process numerator_set;
 
-address_mapping : process (i_videoEN, i_hc, r_numerator)
+denominator_set : process (i_clock)
+begin
+		if (rising_edge(i_clock)) then
+		if denominator_adjustig then
+			if r_inc_pulse = '1' AND r_denominator > 2 then
+				r_denominator <= r_denominator - 1;
+			elsif r_dec_pulse = '1' AND r_denominator < 7 then
+				r_denominator <= r_denominator + 1;
+			elsif r_inc_pulse = '1' AND r_denominator <= 2 then
+				--denominator_adjustig <= false;
+			end if;
+		end if;
+	end if;
+end process denominator_set;
+
+nom_denom_switch : process(r_inc_pulse, r_dec_pulse, r_denominator, r_numerator)
+begin
+	if r_inc_pulse = '1' AND r_denominator <= 2 then
+			denominator_adjustig <= false;
+	 elsif r_dec_pulse = '1' AND r_numerator <= 1 then
+			denominator_adjustig <= true;
+	end if;
+end process nom_denom_switch;
+
+address_mapping : process (i_videoEN, i_hc, r_numerator, r_denominator)
 begin
 if (i_videoEN = '1') then
-	if ( to_integer(unsigned(i_hc) - 144) * r_numerator )/2 < BUFFER_SIZE then
-		o_addr_read	<= ( (to_integer(unsigned(i_hc) - 144) * r_numerator )/2) mod BUFFER_SIZE;
+	if ( (to_integer(unsigned(i_hc) - 144) * r_numerator )/r_denominator) < BUFFER_SIZE then
+		o_addr_read	<= ( (to_integer(unsigned(i_hc) - 144) * r_numerator )/r_denominator) mod BUFFER_SIZE;
 	else
 		o_addr_read	<= BUFFER_SIZE - 1;
 	end if;
