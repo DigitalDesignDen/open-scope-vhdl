@@ -309,7 +309,7 @@ end process pixelColorizer;
 -- combinational logic starting here
 
 --------------------------------------------------------------------------------------------------------------------
---Map both crystal clock coutners to LEDs to confirm that clocks are running (for debug purposees only)
+--Map eigther crystal clock coutners to LEDs to confirm that clocks are running (for debug purposees only)
 gen : for i in 0 to 3 generate
 	LED(i) <= std_logic_vector(to_unsigned(count25,4))(3-i) when SW = '1' 
 			else std_logic_vector(to_unsigned(count32,4))(3-i);
