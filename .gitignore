@@ -39,6 +39,7 @@
 # software binary files
 
 /*
+*.summary
 !/*.gitignore
 !/output_files
 /output_files/*
