@@ -39,10 +39,10 @@
 # software binary files
 
 /*
-*.summary
 !/*.gitignore
 !/output_files
 /output_files/*
+/output_files/open-scope-grid.map.summary
 !/output_files/*.cdf
 !/output_files/*.sof
 !/output_files/*.pof
@@ -68,5 +68,3 @@
 !*.tcl
 
 # End of https://www.toptal.com/developers/gitignore/api/alteraquartusii
-*.summary
-output_files/open-scope-grid.map.summary
