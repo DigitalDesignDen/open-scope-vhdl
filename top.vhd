@@ -99,6 +99,7 @@ signal r_newSample_25		: std_logic;
 signal r_newSample_25_0		: std_logic;
 signal sample_MAX				: natural;
 signal sample_MIN				: natural;
+signal mapped_value 			: integer;
 
 --experimental
 signal glow				: boolean;
@@ -141,6 +142,9 @@ begin
 		
 	U8 : horizontal_control
 		port map(CLK_25, KEY(1), KEY(0), hc, videoEN, addr_read);
+		
+	U9 : sampleToScreenPipeline
+		port map(CLK_25, s_ram_data_out, mapped_value);
 
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------
@@ -240,10 +244,11 @@ end process;
 measure_min : process (CLK_25)
 begin
 	if(rising_edge(CLK_25)) then
+		--map_sampleToScreen(CLK_25, s_ram_data_out, mapped_value);
 		if unsigned(vc) = 524 then
 			sample_MIN <= 0;
-		elsif sample_MIN < map_sampleToScreen(s_ram_data_out) then
-			sample_MIN <= map_sampleToScreen(s_ram_data_out);
+		elsif sample_MIN < mapped_value then
+			sample_MIN <= mapped_value;
 		end if;
 	end if;
 end process measure_min;
@@ -253,8 +258,8 @@ begin
 	if(rising_edge(CLK_25)) then
 		if unsigned(vc) = 524 then
 			sample_MAX <= 2079;
-		elsif sample_MAX > map_sampleToScreen(s_ram_data_out) then
-			sample_MAX <= map_sampleToScreen(s_ram_data_out);
+		elsif sample_MAX > mapped_value then
+			sample_MAX <= mapped_value;
 		end if;
 	end if;
 end process measure_max;
@@ -269,17 +274,17 @@ pixelColorizer : process (CLK_25)
 begin
 	if(rising_edge(CLK_25)) then
 		if (videoEN = '1') then
-			if (unsigned(vc) - 31 = map_sampleToScreen(s_ram_data_out)) then
+			if (unsigned(vc) - 31 = mapped_value) then
 				red	<= "11101010";
 				green	<= "11101010";		-- scope yellow
 				blue	<= "00000000";
-			elsif ( (unsigned(vc) - 30 = map_sampleToScreen(s_ram_data_out)
-					OR unsigned(vc) - 32 = map_sampleToScreen(s_ram_data_out) ) AND glow) then
+			elsif ( (unsigned(vc) - 30 = mapped_value
+					OR unsigned(vc) - 32 = mapped_value ) AND glow) then
 				red	<= X"70";
 				green	<= X"70";		-- dark scope yellow
 				blue	<= X"00";
-			elsif ( (unsigned(vc) - 29 = map_sampleToScreen(s_ram_data_out)
-					OR unsigned(vc) - 33 = map_sampleToScreen(s_ram_data_out) ) AND glow) then
+			elsif ( (unsigned(vc) - 29 = mapped_value
+					OR unsigned(vc) - 33 = mapped_value ) AND glow) then
 				red	<= X"4D";
 				green	<= X"4D";		-- darker scope yellow
 				blue	<= X"00";
