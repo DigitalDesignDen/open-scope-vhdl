@@ -41,7 +41,7 @@ entity TOP is
 			ADV_DE		: out std_logic;
 			
 			--I2C
-			SCL			: out std_logic;
+			SCL			: in std_logic;
 			SDA			: inout std_logic;
 			
 			--User I/O
@@ -74,7 +74,9 @@ signal green_BG	: std_logic_vector(7 downto 0);
 signal blue_BG		: std_logic_vector(7 downto 0);
 
 -- i2c signals
-signal go			: std_logic;
+signal go					: std_logic;
+signal i2c_data_to_FPGA	: byte;
+signal i2c_data_ready	: std_logic;
 
 -- ram signals
 signal s_ram_data_out		: std_logic_vector(11 downto 0);
@@ -114,8 +116,11 @@ begin
 		port map (clk => CLK_25, clr => '1', hsync => ADV_HSYNC,
 						vsync => ADV_VSYNC, hc => hc, vc => vc, visible_img => videoEN);
 	
-	U2 : i2c_Master
-		port map (CLK_25, SCL, SDA, go, X"72", X"10", X"41", 3);
+--	U2 : i2c_Master
+--		port map (CLK_25, SCL, SDA, go, X"72", X"10", X"41", 3);
+		
+	U2 : i2C_slave
+		port map(CLK_32, '0', SDA, SCL, open, i2c_data_to_FPGA, i2c_data_ready);
 		
 	U3 : edgedetect
 		port map (CLK_25, SW, go, pos_edge);
@@ -141,6 +146,7 @@ begin
 		
 	U8 : horizontal_control
 		port map(CLK_25, KEY(1), KEY(0), hc, videoEN, addr_read);
+		
 
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------
@@ -301,6 +307,16 @@ begin
 	
 	end if;
 end process pixelColorizer;
+
+i2c_data_mapper : process(CLK_32)
+begin
+if(rising_edge(CLK_32)) then
+	if(i2c_data_ready = '1') then
+		LED <= i2c_data_to_FPGA(3 downto 0);
+	end if;
+end if;
+end process i2c_data_mapper;
+
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------
 
@@ -310,10 +326,10 @@ end process pixelColorizer;
 
 --------------------------------------------------------------------------------------------------------------------
 --Map eigther crystal clock coutners to LEDs to confirm that clocks are running (for debug purposees only)
-gen : for i in 0 to 3 generate
-	LED(i) <= std_logic_vector(to_unsigned(count25,4))(3-i) when SW = '1' 
-			else std_logic_vector(to_unsigned(count32,4))(3-i);
-end generate;
+--gen : for i in 0 to 3 generate
+--	LED(i) <= std_logic_vector(to_unsigned(count25,4))(3-i) when SW = '1' 
+--			else std_logic_vector(to_unsigned(count32,4))(3-i);
+--end generate;
 
 
 --------------------------------------------------------------------------------------------------------------------

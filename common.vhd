@@ -8,6 +8,7 @@ package common is
 
 -- types
 	type t_edge is (neg_edge, pos_edge);
+	subtype byte is std_logic_vector(7 downto 0);
 	
 -- functions
 	function map_sampleToScreen (sample : std_logic_vector(11 downto 0)) return integer;
