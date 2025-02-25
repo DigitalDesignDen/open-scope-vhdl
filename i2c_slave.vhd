@@ -33,7 +33,7 @@ architecture Behavioral of i2c_slave is
     signal rw_flag      : std_logic := '0';
     
     -- State machine states
-    type state_type is (IDLE, ADDR_RECEIVE, ADDR_ACK, DATA_RECEIVE, DATA_ACK);
+    type state_type is (IDLE, ADDR_RECEIVE, ADDR_ACK, DATA_RECEIVE, DATA_CAPTURE, DATA_ACK);
     signal state : state_type := IDLE;
     
 begin
@@ -42,7 +42,8 @@ begin
 	 
 	 -- debugging purpose
 	 state_out <= X"00" when state=IDLE else X"01" when state=ADDR_RECEIVE else X"02" when state=ADDR_ACK else 
-						X"03" when state=DATA_RECEIVE else X"04" when state=DATA_ACK else X"FF";
+						X"03" when state=DATA_RECEIVE else X"04" when state=DATA_CAPTURE else 
+						X"05" when state=DATA_ACK else X"FF";
     
     -- Synchronize SCL and SDA to the internal clock and detect edges
     process(clk)
@@ -120,16 +121,20 @@ begin
                     
                 -- DATA_RECEIVE: Receive one data byte from the master
                 when DATA_RECEIVE =>
-                    if scl_rising = '1' then
-                        byte_buffer(bit_count) <= sda_sync(2);
-                        if bit_count = 0 then
-                            data_out <= byte_buffer;
-                            write_strobe <= '1';
-                            state <= DATA_ACK;
-                        else
-                            bit_count <= bit_count - 1;
-                        end if;
-                    end if;
+						if scl_rising = '1' then
+							byte_buffer(bit_count) <= sda_sync(2);
+							if bit_count = 0 then
+								state <= DATA_CAPTURE;  -- Wait one clock cycle to update outputs
+							else
+								bit_count <= bit_count - 1;
+							end if;
+						end if;
+
+					when DATA_CAPTURE =>
+						 data_out <= byte_buffer;  -- Now the complete byte is captured
+						 write_strobe <= '1';
+						 state <= DATA_ACK;
+
                     
                 -- DATA_ACK: Issue ACK for the received data byte
                 when DATA_ACK =>

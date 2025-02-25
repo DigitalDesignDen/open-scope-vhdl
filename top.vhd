@@ -312,7 +312,7 @@ i2c_data_mapper : process(CLK_32)
 begin
 if(rising_edge(CLK_32)) then
 	if(i2c_data_ready = '1') then
-		LED <= i2c_data_to_FPGA(3 downto 0);
+		LED <= i2c_data_to_FPGA(7 downto 4);
 	end if;
 end if;
 end process i2c_data_mapper;
