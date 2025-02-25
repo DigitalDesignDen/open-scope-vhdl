@@ -120,7 +120,7 @@ begin
 --		port map (CLK_25, SCL, SDA, go, X"72", X"10", X"41", 3);
 		
 	U2 : i2C_slave
-		port map(CLK_32, '0', SDA, SCL, open, i2c_data_to_FPGA, i2c_data_ready);
+		port map(CLK_32, not KEY(1), SDA, SCL, i2c_data_to_FPGA, open, i2c_data_ready);
 		
 	U3 : edgedetect
 		port map (CLK_25, SW, go, pos_edge);

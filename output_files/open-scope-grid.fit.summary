@@ -1,14 +1,14 @@
-Fitter Status : Successful - Sat Feb 22 00:52:38 2025
+Fitter Status : Successful - Tue Feb 25 12:18:48 2025
 Quartus II 64-Bit Version : 13.0.1 Build 232 06/12/2013 SP 1 SJ Web Edition
 Revision Name : open-scope-grid
 Top-level Entity Name : TOP
 Family : Cyclone III
 Device : EP3C5E144C8
 Timing Models : Final
-Total logic elements : 1,043 / 5,136 ( 20 % )
-    Total combinational functions : 1,029 / 5,136 ( 20 % )
-    Dedicated logic registers : 170 / 5,136 ( 3 % )
-Total registers : 170
+Total logic elements : 1,052 / 5,136 ( 20 % )
+    Total combinational functions : 1,037 / 5,136 ( 20 % )
+    Dedicated logic registers : 179 / 5,136 ( 3 % )
+Total registers : 179
 Total pins : 85 / 95 ( 89 % )
 Total virtual pins : 0
 Total memory bits : 26,880 / 423,936 ( 6 % )
