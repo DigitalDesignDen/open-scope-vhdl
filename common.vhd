@@ -5,9 +5,11 @@ package common is
 
 -- constants
 	constant BUFFER_SIZE : natural := 2240;
+	constant SPLASH_IMAGE_SIZE	: natural := 12480;
 
 -- types
 	type t_edge is (neg_edge, pos_edge);
+	subtype byte is std_logic_vector(7 downto 0);
 	
 -- functions
 	function map_sampleToScreen (sample : std_logic_vector(11 downto 0)) return integer;

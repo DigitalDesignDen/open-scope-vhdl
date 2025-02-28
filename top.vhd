@@ -101,7 +101,11 @@ signal sample_MAX				: natural;
 signal sample_MIN				: natural;
 
 --experimental
-signal glow				: boolean;
+signal glow						: boolean;
+
+-- splashScreen signals
+signal splash_done			: std_logic;
+signal splash_Video_data	: std_logic_vector(23 downto 0);
 
 
 begin
@@ -137,10 +141,13 @@ begin
 		port map (CLK_25, videoEN, hc, vc, red_BG, green_BG, blue_BG);
 		
 	U7 : clkdiv
-		port map(CLK_32, '1', CLK_16);
+		port map (CLK_32, '1', CLK_16);
 		
 	U8 : horizontal_control
-		port map(CLK_25, KEY(1), KEY(0), hc, videoEN, addr_read);
+		port map (CLK_25, KEY(1), KEY(0), hc, videoEN, addr_read);
+		
+	U9 : splashScreen
+		port map (CLK_25, hc,vc, videoEN, splash_Video_data, splash_done);
 
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------
@@ -320,11 +327,9 @@ end generate;
 --------------------------------------------------------------------------------------------------------------------
 --Mapping singals to the conduit (physical pins).
 
-ADV_CLK					<= CLK_25;
-ADV_D(23 downto 16)	<= red;
-ADV_D(15 downto 8)	<= green;
-ADV_D(7 downto 0)		<= blue;
-ADV_DE					<= videoEN;
+ADV_CLK			<= CLK_25;
+ADV_D 			<= (red & green & blue) when splash_done = '1' else splash_Video_data;
+ADV_DE			<= videoEN;
 
 s_adc_sample	<= AD_data;
 AD_CLK 			<= CLK_sample;
