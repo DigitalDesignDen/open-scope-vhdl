@@ -102,6 +102,9 @@ signal r_newSample_25_0		: std_logic;
 signal sample_MAX				: natural;
 signal sample_MIN				: natural;
 
+-- horizontal_control signales
+signal inc, dec				: std_logic;
+
 --experimental
 signal glow				: boolean;
 
@@ -120,7 +123,7 @@ begin
 --		port map (CLK_25, SCL, SDA, go, X"72", X"10", X"41", 3);
 		
 	U2 : i2C_slave
-		port map(CLK_32, not KEY(1), SDA, SCL, i2c_data_to_FPGA, open, i2c_data_ready);
+		port map(CLK_25, not KEY(1), SDA, SCL, i2c_data_to_FPGA, open, i2c_data_ready);
 		
 	U3 : edgedetect
 		port map (CLK_25, SW, go, pos_edge);
@@ -134,18 +137,21 @@ begin
 					
 	U5 : trigger_system2
 		port map (	i_triggervalue => 2079,
-						i_adc_sample => s_adc_sample,
-						i_clock => CLK_sample,
-						o_triggered => s_triggered);
+						i_adc_sample	=> s_adc_sample,
+						i_clock 			=> CLK_sample,
+						o_triggered 	=> s_triggered);
 						
 	U6 : gridGen
 		port map (CLK_25, videoEN, hc, vc, red_BG, green_BG, blue_BG);
 		
 	U7 : clkdiv
-		port map(CLK_32, '1', CLK_16);
+		port map (CLK_32, '1', CLK_16);
 		
 	U8 : horizontal_control
-		port map(CLK_25, KEY(1), KEY(0), hc, videoEN, addr_read);
+		port map (CLK_25, inc, dec, hc, videoEN, addr_read);
+		
+	U9 : i2c_registers
+		port map (CLK_25, i2c_data_to_FPGA, i2c_data_ready, inc, dec);
 		
 
 --------------------------------------------------------------------------------------------------------------------
@@ -171,7 +177,7 @@ begin
 				end if;
 			when writeSamples =>
 				if (addr_write = BUFFER_SIZE - 1) then
-					addr_write			<= 0;
+					addr_write			<=  0 ;
 					s_ram_write_en		<= '0';
 					s_readAllowed_32	<= '1';
 					s_newSample_32		<= '1';
@@ -308,11 +314,11 @@ begin
 	end if;
 end process pixelColorizer;
 
-i2c_data_mapper : process(CLK_32)
+i2c_data_mapper : process(CLK_25)
 begin
-if(rising_edge(CLK_32)) then
+if(rising_edge(CLK_25)) then
 	if(i2c_data_ready = '1') then
-		LED <= i2c_data_to_FPGA(7 downto 4);
+		LED <= i2c_data_to_FPGA(3 downto 0);
 	end if;
 end if;
 end process i2c_data_mapper;

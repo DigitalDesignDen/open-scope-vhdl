@@ -1,3 +1,10 @@
+-- I2C slave
+/*
+This I2C slave only handles writes commands and will only accept one byte.
+Stop command or Restart commd are not eveluated.
+After one byte is received, this slaves returns to IDLE state, waiting for another start.
+*/
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -38,7 +45,7 @@ architecture Behavioral of i2c_slave is
     
 begin
     -- Tri-state buffer for SDA
-    sda <= sda_out when sda_drive = '1' else 'Z';
+    sda <= '0' when sda_drive = '1' else 'Z';
 	 
 	 -- debugging purpose
 	 state_out <= X"00" when state=IDLE else X"01" when state=ADDR_RECEIVE else X"02" when state=ADDR_ACK else 
