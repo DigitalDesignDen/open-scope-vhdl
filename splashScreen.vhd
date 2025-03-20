@@ -22,15 +22,20 @@ end entity;
 
 architecture rtl of splashScreen is
 
-signal splashADDR 	: natural range 0 to SPLASH_IMAGE_SIZE - 1;
-signal splashValue	: byte;
+constant SIZE_X			: natural := 201;
+constant SIZE_Y			: natural := 194;
+constant SCALE_FACTOR	: natural := 1;
+
+signal splashADDR 		: natural range 0 to SPLASH_IMAGE_SIZE - 1;
+signal splashValue		: byte;
 signal r_red_done		: std_logic := '0';
-signal r_green_done	: std_logic := '0';
-signal r_blue_done	: std_logic := '0';
+signal r_green_done		: std_logic := '0';
+signal r_blue_done		: std_logic := '0';
 
 begin
 
 o_DONE <= r_red_done and r_green_done and r_blue_done;
+
 
 
 	U1 : splashROM
@@ -39,16 +44,16 @@ o_DONE <= r_red_done and r_green_done and r_blue_done;
 
 
 splashScreen : process(i_CLK)
-constant xpos : integer range 0 to 639 := 200;
-constant ypos : integer range 0 to 479 := 100;
+constant xpos : integer range 0 to 639 := 640/2 - (SCALE_FACTOR*SIZE_X/2);
+constant ypos : integer range 0 to 479 := 480/2 - (SCALE_FACTOR*SIZE_Y/2);
 variable bg24 : std_logic_vector(23 downto 0) := X"AB" & X"DD" & X"EE";
-variable prescaler : positive range 1 to 1300000;
+variable prescaler : positive range 1 to 2600000;
 begin
 if(rising_edge(i_CLK)) then
 
 	if(i_videoEN = '1') then
-		if (unsigned(i_hc)-144) >= xpos AND (unsigned(i_hc)-144) < 120*2+xpos AND (unsigned(i_vc)-31) >= ypos AND (unsigned(i_vc)-31) < 104*2+ypos then
-			splashADDR <= SPLASH_IMAGE_SIZE -1 - ( to_integer((unsigned(i_hc)-144-xpos) srl 1) + 120 * to_integer((unsigned(i_vc)-31-ypos) srl 1) );
+		if (unsigned(i_hc)-144) >= xpos AND (unsigned(i_hc)-144) < SIZE_X*SCALE_FACTOR+xpos AND (unsigned(i_vc)-31) >= ypos AND (unsigned(i_vc)-31) < SIZE_Y*SCALE_FACTOR+ypos then
+			splashADDR <= SPLASH_IMAGE_SIZE -1 - ( to_integer((unsigned(i_hc)-144-xpos) srl (SCALE_FACTOR-1)) + SIZE_X * to_integer((unsigned(i_vc)-31-ypos) srl (SCALE_FACTOR-1)) );
 			if splashValue = X"FF" then
 				o_VIDEO_DATA <= bg24;
 			else
@@ -60,7 +65,7 @@ if(rising_edge(i_CLK)) then
 	end if;
 	
 	-- this fades the background in with the image and changes the color over time from bg24 to white.
-	if (prescaler = 1300000) then
+	if (prescaler = 2600000) then
 			prescaler := 1;
 			
 			if(unsigned(bg24(23 downto 16)) < X"FF") then

@@ -5,7 +5,7 @@ package common is
 
 -- constants
 	constant BUFFER_SIZE : natural := 2240;
-	constant SPLASH_IMAGE_SIZE	: natural := 12480;
+	constant SPLASH_IMAGE_SIZE	: natural := 38994;--12480;
 
 -- types
 	type t_edge is (neg_edge, pos_edge);
