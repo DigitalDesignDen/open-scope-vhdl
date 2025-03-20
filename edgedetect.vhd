@@ -7,9 +7,9 @@ use work.common.all;
 entity edgedetect is
 
 	port(	CLK				: in std_logic;
-			INPUT				: in std_logic;
+			INPUT			: in std_logic;
 			OUTPUT_PULSE	: out std_logic;
-			MODE				: in t_edge
+			MODE			: in t_edge
 		);
 	
 end edgedetect;
