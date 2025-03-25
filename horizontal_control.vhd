@@ -19,7 +19,7 @@ end horizontal_control;
 
 architecture behavioral of horizontal_control is
 
-signal r_numerator	: natural range 0 to 7 := 0;
+signal r_numerator	: natural range 0 to 7 := 1;
 signal r_denominator	: positive range 1 to 7 := 2;
 
 signal r_inc_pulse	: std_logic;

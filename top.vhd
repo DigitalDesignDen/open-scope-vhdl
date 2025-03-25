@@ -328,11 +328,37 @@ end generate;
 --Mapping singals to the conduit (physical pins).
 
 ADV_CLK			<= CLK_25;
-ADV_D 			<= (red & green & blue) when splash_done = '1' else splash_Video_data;
+--ADV_D 			<= (red & green & blue) when splash_done = '1' else splash_Video_data;
 ADV_DE			<= videoEN;
 
 s_adc_sample	<= AD_data;
 AD_CLK 			<= CLK_sample;
+
+VIDEODATASWITCH : process(red, green, blue, splash_done, splash_Video_data)
+variable addition_r : unsigned(7 downto 0) := (others => '0');
+variable addition_g : unsigned(7 downto 0) := (others => '0');
+variable addition_b : unsigned(7 downto 0) := (others => '0');
+variable shifted : std_logic_vector(splash_Video_data'range) := (others => '0');
+begin
+	if splash_done = '1' then
+		if splash_Video_data >= X"F2F2F2" then
+			-- treat white bg from splash imgage as transparent:
+			ADV_D				<= red & green & blue;
+		else
+			-- mix signal and grid bg with splash image:
+			addition_r		:= unsigned(red) + unsigned(splash_Video_data(23 downto 16));	-- color addition
+			addition_g		:= unsigned(green) + unsigned(splash_Video_data(15 downto 8));	-- color addition
+			addition_b		:= unsigned(blue) + unsigned(splash_Video_data(7 downto 0));	-- color addition
+			shifted(23 downto 16)	:= std_logic_vector(addition_r srl 1)(7 downto 0);					-- divide sum by 2
+			shifted(15 downto 8)	:= std_logic_vector(addition_g srl 1)(7 downto 0);					-- divide sum by 2
+			shifted(7 downto 0)		:= std_logic_vector(addition_b srl 1)(7 downto 0);					-- divide sum by 2
+			ADV_D					<= shifted;															-- map to 24-bit conduit
+		end if;
+	else
+		-- if splash image animation is not done, show splash image:
+		ADV_D <= splash_Video_data;
+	end if;
+end process;
 
 --------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------------
