@@ -43,6 +43,9 @@
 !/output_files
 /output_files/*
 /output_files/open-scope-grid.map.summary
+!/db
+/db/*
+!/db/open-scope.ram0_splashROM_1a8d2ec4.hdl.mif
 !/output_files/*.cdf
 !/output_files/*.sof
 !/output_files/*.pof
